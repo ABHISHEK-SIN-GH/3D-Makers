@@ -4,8 +4,8 @@
 <head>
     <title>Free online STL viewer</title>
     <meta charset="utf-8" />
-    <meta name="description"
-        content="View 3D STL files directly in your browser - no software installation is required" />
+    <meta name="description" content="View 3D STL files directly in your browser - no software installation is required" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <script async="" src="analytics.js"></script>
     <script>
         (function (i, s, o, g, r, a, m) {
@@ -488,15 +488,24 @@
         function prepare_upload_file() {
             if (waiting) return;
             if ($id("fileselect").value == "") return;
-            all_files.push($id("fileselect").files[0]);
-            upload_file($id("fileselect").files[0]);
-            console.log(all_files);
-            var previewsTab = document.getElementById('previews');
-            previewsTab.innerHTML = '';
-            for (let index = 0; index < all_files.length; index++) {
-                const element = all_files[index];
-                previewsTab.innerHTML += `<button onclick='reset(); upload_file(all_files[${index}]);'>${element.name}</button>`;
+            if(upload_file($id("fileselect").files[0])){
+                all_files.push($id("fileselect").files[0]);
+                setPreviewTitle($id("fileselect").files[0].name);
+                var previewsTab = document.getElementById('previews');
+                previewsTab.innerHTML = '';
+                previewsTab.innerHTML += "<div class='row'>";
+                for (let index = 0; index < all_files.length; index++) {
+                    const element = all_files[index];
+                    previewsTab.innerHTML += `<button class="btn btn-warning border-dark col-6 mb-1 text-center" onclick='reset(); setPreviewTitle(all_files[${index}].name); upload_file(all_files[${index}]);'>${element.name}</button>`;
+                }
+                previewsTab.innerHTML += "</div>";
             }
+            console.log(all_files);
+        }
+
+        function setPreviewTitle(titleName){
+            var pTitle = document.getElementById('previewTitle');
+            pTitle.innerText = titleName;
         }
 
         function open_img() {
@@ -524,15 +533,16 @@
 </head>
 
 <body>
-    <input type="file" style="position: absolute; top: -150px; height: 200px" id="fileselect"
-        onchange="prepare_upload_file();" />
+    <input type="file"  style="position: absolute; top: -150px; height: 200px; display: none;" id="fileselect" onchange="prepare_upload_file();" />
 
-    <div id="mainwrap" style="
+    <div id="mainwrap" class="m-2" style="
         margin: 0px auto;
         visibility: visible;
+        width: 400px;
       ">
+        <div class="bg-primary mb-0 d-flex justify-content-center align-items-center rounded-top-3" style="height: 50px;"><h6 class="text-light" id="previewTitle">title</h6></div>
 
-        <div id="cjcwrap" style="
+        <div id="cjcwrap" class="mb-1" style="
           position: relative;
           border: 2px solid black;
           background-color: yellow;
@@ -583,18 +593,14 @@
             position: relative;
             left: 0px;
             top: 0px;
-            margin: 0px auto;
             text-align: center;
             height: 400px;
             width: 400px;">
             </div>
         </div>
 
-        <div>
-            <span id="titlet2" style="font: 14px Arial; color: #3434ab; cursor: pointer"
-                onclick="if (waiting) return false; reset(); $id('fileselect').click();">or <u>browse your
-                    computer</u></span>
-        </div>
+        <span id="titlet2" class="btn btn-primary p-3 mb-1 text-dark w-100" style="font: 14px Arial; color: #3434ab; cursor: pointer"
+            onclick="if (waiting) return false; reset(); $id('fileselect').click();"><u class="text-light">Upload File...</u></span>
 
         <div id="previews">
         </div>
@@ -819,6 +825,9 @@
             $id("mainwrap").style.visibility = "visible";
         }, 200);
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script>
 </body>
 
 </html>

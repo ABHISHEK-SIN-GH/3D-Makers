@@ -16,6 +16,8 @@ function upload_file(f)
 	}					
 				
 	read_file(f);
+
+	return true;
 }
 
 
