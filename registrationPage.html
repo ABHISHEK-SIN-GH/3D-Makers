@@ -75,7 +75,7 @@
     </style>
 </head>
 <body>
-    <div class="row m-0 p-0" style="height:100vh;" id="RegistrationPage">
+    <div class="row m-0 p-0" style="height:100vh;" id="RegistrationPage"> 
         <div class="col-md-5 p-md-5 p-4 bg-primary-light d-md-inline d-none">
             <h3 class="text-light cursiveFont">3D-Makers</h3>
             <h1 class="lh-sm my-4" style="font-size: 48px;"><span class="fw-normal">Bringing</span><br> 
@@ -84,7 +84,7 @@
             <img src="3DM-Banner.png" alt="logoBanner" class="w-100 mt-2">    
         </div>
         <div class="col-md-7 bg-light p-md-5 p-4 d-flex justify-content-center align-items-md-center">
-            <div class="text-start col-md-10 col-12" style="max-width: 400px;">
+            <div class="text-start col-md-10 col-12" style="max-width: 400px;" id="signInPage">
                 <h3 class="text-primary-dark cursiveFont mb-5 d-block d-md-none">3D-Makers</h3>
                 <h4 class="text-dark mb-3 fw-bold">Sign in to Dribbble</h4>
                 <div class="row m-0 p-0">
@@ -106,14 +106,75 @@
                       <label for="exampleInputPassword1" class="form-label w-100"><div class="d-flex justify-content-between"><b>Password</b> <span class="text-primary-dark">Forget Password?</span></div></label>
                       <input type="password" class="form-control" id="exampleInputPassword1">
                     </div>
-                    <button type="submit" class="btn btn-dark bg-primary-dark text-light col-12 col-md-6 mt-3">Sign In</button>
-                    <p class="d-md-none mt-4 w-100 text-center">Not a member? <a href="" class="text-decoration-none text-primary-dark fw-bold">Sign up now</a></p>
+                    <button type="submit" class="btn btn-dark bg-primary-dark text-light col-12 col-md-6 mt-3" >Sign In</button>
+                    <p class="d-md-none mt-4 w-100 text-center">Not a member? <a class="text-decoration-none text-primary-dark fw-bold" style="cursor: pointer;" onclick="TogglePage()">Sign up now</a></p>
                 </form>
+                <div>
+                    <span style="position: absolute; top: 30px; right: 50px;" class="d-none d-md-inline">Not a member? <a class="text-decoration-none text-primary-dark fw-bold" style="cursor: pointer;" onclick="TogglePage()">Sign up now</a></span>
+                </div>
             </div>
-            <div>
-                <span style="position: absolute; top: 30px; right: 50px;" class="d-none d-md-inline">Not a member? <a href="" class="text-decoration-none text-primary-dark fw-bold">Sign up now</a></span>
+            <div class="text-start col-md-10 col-12" style="max-width: 400px; display: none;" id="signUpPage">
+                <h3 class="text-primary-dark cursiveFont mb-5 d-block d-md-none">3D-Makers</h3>
+                <h4 class="text-dark mb-3 fw-bold">Sign up to Dribbble</h4>
+                <div class="row m-0 p-0">
+                    <div class="btn btn-dark bg-primary-dark col-8">
+                        <i class="fa-brands fa-google col-2 text-light"></i>
+                        <span class="col-10 text-light">Sign Up with Google</span>
+                    </div>
+                    <div class="btn btn-light col-2 ms-3 border-primary-dark shadow shadow-lg">
+                        <i class="fa-brands fa-twitter text-primary-dark"></i>
+                    </div>
+                </div>
+                <hr class="divider" style="margin-top: 35px; margin-bottom: 20px;">
+                <form>
+                    <div class="row m-0 p-0 mb-3">
+                        <div class="col-6 p-0 pe-1">
+                            <label for="exampleInputEmail1" class="form-label"><b>Name</b></label>
+                            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <div class="col-6 p-0 ps-2">
+                            <label for="exampleInputEmail1" class="form-label"><b>Username</b></label>
+                            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label"><b>Email</b></label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label w-100"><b>Password</b></label>
+                      <input type="password" class="form-control" id="exampleInputPassword1">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                        <label class="form-check-label" for="defaultCheck1">
+                        <small class="fw-light">Creating an account means you’re okay with our <a href="#" target="_blank" class="text-decoration-none">Terms of Service</a> and <a href="#" target="_blank" class="text-decoration-none">Privacy Policy</a>.</small>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-dark bg-primary-dark text-light col-12 col-md-6 mt-3">Sign Up</button>
+                    <p class="d-md-none mt-4 w-100 text-center">Already a member? <a class="text-decoration-none text-primary-dark fw-bold" style="cursor: pointer;" onclick="TogglePage()">Sign in now</a></p>
+                </form>
+                <div>
+                    <span style="position: absolute; top: 30px; right: 50px;" class="d-none d-md-inline">Already a member? <a class="text-decoration-none text-primary-dark fw-bold" style="cursor: pointer;" onclick="TogglePage()">Sign in now</a></span>
+                </div>
             </div>
         </div>
     </div>
+    <script>
+        var flag = true;
+        var signInPage = document.getElementById('signInPage');
+        var signUpPage = document.getElementById('signUpPage');
+        function TogglePage(){
+            if(flag){
+                signInPage.style.display = 'none';
+                signUpPage.style.display = 'inline';
+                flag = false;
+            }else{
+                signInPage.style.display = 'inline';
+                signUpPage.style.display = 'none';
+                flag = true;
+            }
+        }
+    </script>
 </body>
 </html>
