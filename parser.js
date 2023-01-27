@@ -352,7 +352,6 @@ function parse_obj (s)
 	return ({vertices:geometry.vertices, faces:geometry.faces, colors:false});
 }
 
-
 function parse_stl_ascii (s)
 {
 	try

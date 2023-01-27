@@ -7,8 +7,7 @@ function upload_file(f)
 		alert('File type is not supported');
 		return false;
 	}
-				
-				
+					
 	if (f.size>max_file_size)
 	{
 		alert('File is too big - maximum allowed size is 20mb');
@@ -19,8 +18,6 @@ function upload_file(f)
 
 	return true;
 }
-
-
 
 function read_file(f)
 {

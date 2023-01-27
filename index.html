@@ -2,36 +2,11 @@
 <html lang="en">
 
 <head>
-    <title>Free online STL viewer</title>
+    <title>3D-Makers</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="View 3D STL files directly in your browser - no software installation is required" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script async="" src="analytics.js"></script>
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i["GoogleAnalyticsObject"] = r;
-            (i[r] =
-                i[r] ||
-                function () {
-                    (i[r].q = i[r].q || []).push(arguments);
-                }),
-                (i[r].l = 1 * new Date());
-            (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m);
-        })(
-            window,
-            document,
-            "script",
-            "analytics.js",
-            "ga"
-        );
-
-        ga("create", "UA-54015102-1", "auto");
-        ga("send", "pageview");
-    </script>
     <script src="three.min.js"></script>
     <script src="webgl_detector.js"></script>
     <script src="OrbitControls.js"></script>
@@ -40,13 +15,9 @@
     <script src="read_external.js"></script>
     <script>
         var need_browser = false;
-    </script>
-    <script>
         if (!(typeof FileReader !== "undefined")) {
             need_browser = true;
         }
-    </script>
-    <script>
         var is_ie = !!window.MSStream;
         var waiting = false;
         var mesh = null;
@@ -83,6 +54,10 @@
         var has_edges = false;
         var url_is_local = false;
         var all_files = [];
+        var Vf_data;
+        var Volume;
+        var Area;
+        var fileMain = {};
 
         function $id(id) {
             return document.getElementById(id);
@@ -193,7 +168,6 @@
 
         function handleDragOver(e) {
             if (waiting) return;
-
             e.stopPropagation();
             e.preventDefault();
             e.dataTransfer.dropEffect = "copy";
@@ -202,16 +176,13 @@
         function handleFileDrop(e) {
             e.stopPropagation();
             e.preventDefault();
-
             if (waiting) return;
-
             //first, check if its a file
             if (e.dataTransfer.files.length > 0) {
                 if (e.dataTransfer.files[0].size > max_file_size) {
                     alert("File is too big - maximum allowed size is 35mb");
                     return false;
                 }
-
                 if (!supported_file_type(e.dataTransfer.files[0].name)) {
                     alert("File type is not supported");
                     return false;
@@ -252,6 +223,8 @@
 
         function after_file_load(filename, s) {
             var vf_data;
+
+            // console.log(s);
 
             try {
                 vf_data = parse_3d_file(filename, s);
@@ -341,7 +314,13 @@
 
             //$id('cjcwrap').addEventListener('dragover', handleDragOver, false);
             //$id('cjcwrap').addEventListener('drop', handleFileDrop, false);
-
+            
+            Vf_data = vf_data;
+            Area = area;
+            Volume = vol;
+            fileMain.Data = Vf_data;
+            fileMain.Area = Area;
+            fileMain.Volume = Volume;
             waiting = false;
         }
 
@@ -490,8 +469,10 @@
             if (waiting) return;
             if ($id("fileselect").value == "") return;
             if(upload_file($id("fileselect").files[0])){
-                all_files.push($id("fileselect").files[0]);
-                setPreviewTitle($id("fileselect").files[0].name);
+                fileMain = {};
+                fileMain = $id("fileselect").files[0];
+                all_files.push(fileMain);
+                setPreviewTitle(fileMain.name);
                 var previewsTab = document.getElementById('previews');
                 previewsTab.innerHTML = '';
                 previewsTab.innerHTML += "<div class='row'>";
@@ -501,7 +482,7 @@
                 }
                 previewsTab.innerHTML += "</div>";
             }
-            console.log(all_files);
+            console.log("All Files: ",all_files);
         }
 
         function setPreviewTitle(titleName){
@@ -543,68 +524,64 @@
         max-width: 400px;
       ">
         <div class="bg-primary mb-0 d-flex justify-content-center align-items-center rounded-top-3" style="height: 50px;"><h6 class="text-light" id="previewTitle">3D-Makers</h6></div>
+            <div id="cjcwrap" class="mb-1" style="
+                position: relative;
+                border: 2px solid black;
+                background-color: yellow;
+                display: inline-block;
+                width: 100%;
+                height: 400px;
+            ">
+                <div id="cjcdrag" style="
+                position: absolute;
+                height: 100px;
+                width: 350px;
+                top: 378px;
+                left: 353.5px;
+                ">
+                    <span id="titlet1" style="font: 20px Arial; color: #343434">Drag &amp; drop your STL file
+                        here</span><br />
+                    <span id="titlet2" style="font: 14px Arial; color: #3434ab; cursor: pointer"
+                        onclick="if (waiting) return false;$id('fileselect').click();">or <u>browse your computer</u></span>
+                </div>
 
-        <div id="cjcwrap" class="mb-1" style="
-          position: relative;
-          border: 2px solid black;
-          background-color: yellow;
-          display: inline-block;
-          width: 100%;
-          height: 400px;
-        ">
-            <div id="cjcdrag" style="
-            position: absolute;
-            height: 100px;
-            width: 350px;
-            top: 378px;
-            left: 353.5px;
-          ">
-                <span id="titlet1" style="font: 20px Arial; color: #343434">Drag &amp; drop your STL file
-                    here</span><br />
-                <span id="titlet2" style="font: 14px Arial; color: #3434ab; cursor: pointer"
-                    onclick="if (waiting) return false;$id('fileselect').click();">or <u>browse your computer</u></span>
+                <div id="cjcpbar" style="
+                display: none;
+                position: absolute;
+                height: 50px;
+                width: 350px;
+                top: 365.5px;
+                left: 353.5px;
+                ">
+                    <span id="pgt1" style="font: 15px Arial; color: #343478">Reading file ...</span><br />
+                    <progress id="file_pbar" value="0" max="1"></progress><br /><span id="fcancel"
+                        style="text-decoration: underline; cursor: pointer" onclick="cancel_download=true;">(cancel)</span>
+                </div>
+
+                <div id="cjcproc" style="
+                display: none;
+                position: absolute;
+                height: 50px;
+                width: 350px;
+                top: 365.5px;
+                left: 353.5px;
+                ">
+                    <span id="prt1" style="font: 15px Arial; color: #343478">Processing ...</span><br />
+                </div>
+
+                <div id="cjc" onmousedown="if (!fix_rotation) {controls.autoRotate=false;}" style="
+                display: none;
+                position: relative;
+                left: 0px;
+                top: 0px;
+                height: 400px;
+                max-width: 400px;">
+                </div>
             </div>
-
-            <div id="cjcpbar" style="
-            display: none;
-            position: absolute;
-            height: 50px;
-            width: 350px;
-            top: 365.5px;
-            left: 353.5px;
-          ">
-                <span id="pgt1" style="font: 15px Arial; color: #343478">Reading file ...</span><br />
-                <progress id="file_pbar" value="0" max="1"></progress><br /><span id="fcancel"
-                    style="text-decoration: underline; cursor: pointer" onclick="cancel_download=true;">(cancel)</span>
+            <span id="titlet2" class="btn btn-primary p-3 mb-1 text-dark w-100" style="font: 14px Arial; color: #3434ab; cursor: pointer"
+                onclick="if (waiting) return false; reset(); $id('fileselect').click();"><u class="text-light">Upload File...</u></span>
+            <div id="previews">
             </div>
-
-            <div id="cjcproc" style="
-            display: none;
-            position: absolute;
-            height: 50px;
-            width: 350px;
-            top: 365.5px;
-            left: 353.5px;
-          ">
-                <span id="prt1" style="font: 15px Arial; color: #343478">Processing ...</span><br />
-            </div>
-
-            <div id="cjc" onmousedown="if (!fix_rotation) {controls.autoRotate=false;}" style="
-            display: none;
-            position: relative;
-            left: 0px;
-            top: 0px;
-            height: 400px;
-            max-width: 400px;">
-            </div>
-        </div>
-
-        <span id="titlet2" class="btn btn-primary p-3 mb-1 text-dark w-100" style="font: 14px Arial; color: #3434ab; cursor: pointer"
-            onclick="if (waiting) return false; reset(); $id('fileselect').click();"><u class="text-light">Upload File...</u></span>
-
-        <div id="previews">
-        </div>
-
         </div>
     </div>
 
@@ -815,9 +792,7 @@
 
         $id("cjcwrap").addEventListener("dragover", handleDragOver, false);
         $id("cjcwrap").addEventListener("drop", handleFileDrop, false);
-    </script>
-
-    <script>
+    
         if (need_browser)
             alert("Your browser is too old and is not supported by this website. Please install a modern browser (Chrome is recommended).");
         set_color_by_name('yellow', true);
@@ -826,7 +801,6 @@
             $id("mainwrap").style.visibility = "visible";
         }, 200);
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script>
 </body>
